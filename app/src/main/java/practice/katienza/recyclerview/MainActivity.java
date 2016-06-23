@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         toCompare.clear();
-
     }
 
     private void removeInstancesFromList(List<String> list,String toBeRemoved) {
@@ -94,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private class FlipUpdaterThread implements Runnable {
         private List<View> toFlip;
-
         public void flip(List<View> toFlip) {
             this.toFlip=toFlip;
         }
