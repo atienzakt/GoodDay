@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         list.removeAll(toRemove);
     }
 
+
     private class FlipUpdaterThread implements Runnable {
         private List<View> toFlip;
         public void flip(List<View> toFlip) {
