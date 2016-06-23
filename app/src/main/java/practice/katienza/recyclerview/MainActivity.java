@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (!s1.equals(s2)) {
                 isFlipping=true;
                 flipUpdaterThread.flip(new ArrayList<View>(toCompare));
-                h.postDelayed(flipUpdaterThread,10000);
+                h.postDelayed(flipUpdaterThread,2000);
             } else {
                 removeInstancesFromList(tempList,tempList.get(rv.getChildAdapterPosition(v1)));
                 rca.notifyItemRemoved(rv.getChildAdapterPosition(v1));
@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toRemove.add(toBeRemoved);
         list.removeAll(toRemove);
     }
-
 
     private class FlipUpdaterThread implements Runnable {
         private List<View> toFlip;
