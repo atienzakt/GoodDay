@@ -16,8 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnCheckMatchListener{
-
-    //String[] tempArr= {"A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H"};
     private String[] tempArr= {"A","B","C","D","A","B","C","D"};
     private List<String> tempList = new ArrayList<String>(Arrays.asList(tempArr));
     private RecyclerView rv;
