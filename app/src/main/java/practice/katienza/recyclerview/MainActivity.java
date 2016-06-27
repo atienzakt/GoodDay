@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
@@ -17,7 +16,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnCheckMatchListener{
     private final String[] lettersToPlay= {"H","A","P","Y","B","I","R","T","D","N","H","A","P","Y","B","I","R","T","D","N"};
-    private final String[] lettersBoard={"H","A","P","P","Y"," ","B","I","R","T","H","D","A","Y"," ","H","A","N"};
+    private final String[] lettersBoard={"H","A","P","P","Y"," "," "," ",
+                                         "B","I","R","T","H","D","A","Y",
+                                         "H","A","N","N","A","H"};
     private final List<String> lettersToPlayList = new ArrayList<String>(Arrays.asList(lettersToPlay));
     private final List<String> lettersBoardList = new ArrayList<String>(Arrays.asList(lettersBoard));
     private RecyclerView lettersInPlay;
@@ -39,15 +40,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setupBoard() {
         letterBoardInPlay= (RecyclerView) findViewById(R.id.letters_board);
-        LinearLayoutManager llm = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        GridLayoutManager llm = new GridLayoutManager(this,8,GridLayoutManager.VERTICAL,false);
         letterBoardInPlay.setLayoutManager(llm);
         letterBoardInPlayAdapter = new RecyclerAdapter(lettersBoardList,null,android.R.anim.slide_in_left,android.R.anim.slide_out_right);
         letterBoardInPlay.setAdapter(letterBoardInPlayAdapter);
     }
 
+    private void findAndFlipMatchesOnBoard(String s) {
+        int index = 0;
+        for(String letters:lettersBoard){
+            if(letters.equals(s)){
+                ((ViewAnimator)letterBoardInPlay.findViewHolderForLayoutPosition(index).itemView.findViewById(R.id.card)).showNext();
+            }
+            index++;
+        }
+    }
+
     private void setupLettersToPlay() {
         lettersInPlay = (RecyclerView) findViewById(R.id.letters_to_play);
-        GridLayoutManager llm = new GridLayoutManager(this,5,GridLayoutManager.VERTICAL,false);
+        GridLayoutManager llm = new GridLayoutManager(this,4,GridLayoutManager.VERTICAL,false);
         lettersInPlay.setLayoutManager(llm);
         lettersInPlayAdapter = new RecyclerAdapter(lettersToPlayList, this,R.anim.from_middle,R.anim.to_middle );
         RecyclerView.ItemDecoration itemDecor = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
@@ -96,7 +107,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 flipUpdaterThread.flip(new ArrayList<View>(toCompare));
                 handler.postDelayed(flipUpdaterThread,2000);
             } else {
-                removeInstancesFromList(lettersToPlayList, lettersToPlayList.get(lettersInPlay.getChildAdapterPosition(v1)));
+                findAndFlipMatchesOnBoard(s1);
+                removeInstancesFromList(lettersToPlayList, s1);
                 lettersInPlayAdapter.notifyItemRemoved(lettersInPlay.getChildAdapterPosition(v1));
                 lettersInPlayAdapter.notifyItemRemoved(lettersInPlay.getChildAdapterPosition(v2));
                 toCompare.clear();

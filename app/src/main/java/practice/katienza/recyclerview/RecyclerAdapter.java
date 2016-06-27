@@ -1,6 +1,7 @@
 package practice.katienza.recyclerview;
 
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,6 +39,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @Override
     public void onBindViewHolder(RecycleViewHolder holder, final int position) {
         holder.tv1.setText(contents.get(position));
+        if(holder.tv1.getText().equals(" ")){
+            holder.tv1.setBackgroundColor(Color.WHITE);
+            holder.viewAnimator.showNext();
+        }
     }
 
     @Override
