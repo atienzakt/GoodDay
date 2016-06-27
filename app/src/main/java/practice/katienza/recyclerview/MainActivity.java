@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupBoard();
     }
 
-
     private void setupBoard() {
         letterBoardInPlay = (RecyclerView) findViewById(R.id.letters_board);
         GridLayoutManager llm = new GridLayoutManager(this,8,GridLayoutManager.VERTICAL,false);

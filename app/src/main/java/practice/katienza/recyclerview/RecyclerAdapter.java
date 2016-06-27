@@ -18,7 +18,6 @@ import java.util.List;
  * Created by katienza on 6/15/2016.
  */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecycleViewHolder> {
-
     private List<String> contents;
     private View.OnClickListener onClickListener;
     private int inAnimation;
