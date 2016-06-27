@@ -14,30 +14,20 @@
             android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:src="@mipmap/ic_launcher"/>
         </LinearLayout>
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:textAlignment="center"
                 android:text="New Text"
                 android:background="@android:color/darker_gray"
                 android:id="@+id/textView"
                 android:textAppearance="?android:textAppearanceLarge"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="New Text"
-                android:textAlignment="center"
-                android:background="@android:color/darker_gray"
-                android:id="@+id/textView2"
-                android:textAppearance="?android:textAppearanceMedium"/>
-        </LinearLayout>
-
+        </RelativeLayout>
     </ViewAnimator>
 </LinearLayout>

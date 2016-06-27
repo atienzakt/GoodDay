@@ -6,9 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import java.util.ArrayList;
@@ -16,51 +16,72 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnCheckMatchListener{
-    private String[] tempArr= {"A","B","C","D","A","B","C","D"};
-    private List<String> tempList = new ArrayList<String>(Arrays.asList(tempArr));
-    private RecyclerView rv;
-    private RecyclerAdapter rca;
-    private Handler h = new Handler();
+    private final String[] lettersToPlay= {"H","A","P","Y","B","I","R","T","D","N","H","A","P","Y","B","I","R","T","D","N"};
+    private final String[] lettersBoard={"H","A","P","P","Y"," ","B","I","R","T","H","D","A","Y"," ","H","A","N"};
+    private final List<String> lettersToPlayList = new ArrayList<String>(Arrays.asList(lettersToPlay));
+    private final List<String> lettersBoardList = new ArrayList<String>(Arrays.asList(lettersBoard));
+    private RecyclerView lettersInPlay;
+    private RecyclerAdapter lettersInPlayAdapter;
+    private RecyclerView letterBoardInPlay;
+    private RecyclerAdapter letterBoardInPlayAdapter;
+    private Handler handler = new Handler();
     private FlipUpdaterThread flipUpdaterThread= new FlipUpdaterThread();
-    private boolean isFlipping;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        rv = (RecyclerView) findViewById(R.id.recycler_view);
+        setupLettersToPlay();
+        setupBoard();
+    }
+
+
+    private void setupBoard() {
+        letterBoardInPlay= (RecyclerView) findViewById(R.id.letters_board);
+        LinearLayoutManager llm = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        letterBoardInPlay.setLayoutManager(llm);
+        letterBoardInPlayAdapter = new RecyclerAdapter(lettersBoardList,null,android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+        letterBoardInPlay.setAdapter(letterBoardInPlayAdapter);
+    }
+
+    private void setupLettersToPlay() {
+        lettersInPlay = (RecyclerView) findViewById(R.id.letters_to_play);
         GridLayoutManager llm = new GridLayoutManager(this,5,GridLayoutManager.VERTICAL,false);
-        rv.setLayoutManager(llm);
-        rca = new RecyclerAdapter(tempList, this );
-        RecyclerView.ItemDecoration itemDecor = new DividerItemDecoration(this,LinearLayoutManager.VERTICAL);
-        rv.addItemDecoration(itemDecor);
-        rv.setAdapter(rca);
+        lettersInPlay.setLayoutManager(llm);
+        lettersInPlayAdapter = new RecyclerAdapter(lettersToPlayList, this,R.anim.from_middle,R.anim.to_middle );
+        RecyclerView.ItemDecoration itemDecor = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        lettersInPlay.addItemDecoration(itemDecor);
+        lettersInPlay.setAdapter(lettersInPlayAdapter);
     }
 
     @Override
     public void onClick(View v) {
         addToCheck(v);
-
     }
 
     @Override
     public void addToCheck(View v){
         toCompare.add(v);
-        if(isFlipping){
-            h.removeCallbacks(flipUpdaterThread);
-            if(flipUpdaterThread.toFlip.contains(v)){
-                flipUpdaterThread.toFlip.remove(v);
+        checkFlips(v);
+        if (toCompare.size() == 2) {
+            onCheckMatch();
+        }
+    }
+
+    private void checkFlips(View v) {
+        if(flipUpdaterThread.isFlipping()){
+            handler.removeCallbacks(flipUpdaterThread);
+            if(flipUpdaterThread.contains(v)){
+                flipUpdaterThread.remove(v);
             }
             else{
                 ((ViewAnimator)v.findViewById(R.id.card)).showNext();
             }
-            h.post(flipUpdaterThread);
+            handler.post(flipUpdaterThread);
         }
         else{
             ((ViewAnimator)v.findViewById(R.id.card)).showNext();
-        }
-        if (toCompare.size() == 2) {
-            onCheckMatch();
         }
     }
 
@@ -72,13 +93,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String s1 = ((TextView) v1.findViewById(R.id.textView)).getText().toString();
             String s2 = ((TextView) v2.findViewById(R.id.textView)).getText().toString();
             if (!s1.equals(s2)) {
-                isFlipping=true;
                 flipUpdaterThread.flip(new ArrayList<View>(toCompare));
-                h.postDelayed(flipUpdaterThread,2000);
+                handler.postDelayed(flipUpdaterThread,2000);
             } else {
-                removeInstancesFromList(tempList,tempList.get(rv.getChildAdapterPosition(v1)));
-                rca.notifyItemRemoved(rv.getChildAdapterPosition(v1));
-                rca.notifyItemRemoved(rv.getChildAdapterPosition(v2));
+                removeInstancesFromList(lettersToPlayList, lettersToPlayList.get(lettersInPlay.getChildAdapterPosition(v1)));
+                lettersInPlayAdapter.notifyItemRemoved(lettersInPlay.getChildAdapterPosition(v1));
+                lettersInPlayAdapter.notifyItemRemoved(lettersInPlay.getChildAdapterPosition(v2));
                 toCompare.clear();
             }
         }
@@ -89,20 +109,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         List<String> toRemove = new ArrayList<String>();
         toRemove.add(toBeRemoved);
         list.removeAll(toRemove);
-    }
-
-    private class FlipUpdaterThread implements Runnable {
-        private List<View> toFlip;
-        public void flip(List<View> toFlip) {
-            this.toFlip=toFlip;
-        }
-
-        @Override
-        public void run() {
-            for(View v:toFlip) {
-                ((ViewAnimator) v.findViewById(R.id.card)).showNext();
-            }
-            isFlipping=false;
-        }
     }
 }
