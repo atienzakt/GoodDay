@@ -13,7 +13,7 @@ class FlipUpdaterThread implements Runnable {
     private boolean isFlipping;
 
     public void flip(List<View> toFlip) {
-        isFlipping=true;
+        isFlipping = true;
         this.toFlip = toFlip;
     }
 

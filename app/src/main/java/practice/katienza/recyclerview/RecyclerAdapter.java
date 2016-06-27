@@ -24,10 +24,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     private int inAnimation;
     private int outAnimation;
     public RecyclerAdapter(List<String> contents, View.OnClickListener onClickListener,int inAnimation,int outAnimation){
-        this.contents=contents;
-        this.onClickListener=onClickListener;
-        this.inAnimation=inAnimation;
-        this.outAnimation=outAnimation;
+        this.contents = contents;
+        this.onClickListener = onClickListener;
+        this.inAnimation = inAnimation;
+        this.outAnimation = outAnimation;
     }
 
     @Override
