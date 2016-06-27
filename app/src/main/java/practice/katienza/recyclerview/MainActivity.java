@@ -15,8 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnCheckMatchListener{
-    private final String[] lettersToPlay= {"H","A","P","Y","B","I","R","T","D","N","H","A","P","Y","B","I","R","T","D","N"};
-    private final String[] lettersBoard={"H","A","P","P","Y"," "," "," ",
+    private final String[] lettersToPlay = {"H","A","P","Y","B","I","R","T","D","N","H","A","P","Y","B","I","R","T","D","N"};
+    private final String[] lettersBoard = {"H","A","P","P","Y"," "," "," ",
                                          "B","I","R","T","H","D","A","Y",
                                          "H","A","N","N","A","H"};
     private final List<String> lettersToPlayList = new ArrayList<String>(Arrays.asList(lettersToPlay));
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView letterBoardInPlay;
     private RecyclerAdapter letterBoardInPlayAdapter;
     private Handler handler = new Handler();
-    private FlipUpdaterThread flipUpdaterThread= new FlipUpdaterThread();
+    private FlipUpdaterThread flipUpdaterThread = new FlipUpdaterThread();
 
 
     @Override
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void setupBoard() {
-        letterBoardInPlay= (RecyclerView) findViewById(R.id.letters_board);
+        letterBoardInPlay = (RecyclerView) findViewById(R.id.letters_board);
         GridLayoutManager llm = new GridLayoutManager(this,8,GridLayoutManager.VERTICAL,false);
         letterBoardInPlay.setLayoutManager(llm);
         letterBoardInPlayAdapter = new RecyclerAdapter(lettersBoardList,null,android.R.anim.slide_in_left,android.R.anim.slide_out_right);
