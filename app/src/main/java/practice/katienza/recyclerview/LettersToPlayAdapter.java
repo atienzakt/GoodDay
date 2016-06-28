@@ -3,7 +3,6 @@ package practice.katienza.recyclerview;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,22 +10,17 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by katienza on 6/15/2016.
  */
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecycleViewHolder> {
+public class LettersToPlayAdapter extends RecyclerView.Adapter<LettersToPlayAdapter.RecycleViewHolder> {
     private List<String> contents;
     private View.OnClickListener onClickListener;
-    private int inAnimation;
-    private int outAnimation;
-    public RecyclerAdapter(List<String> contents, View.OnClickListener onClickListener,int inAnimation,int outAnimation){
+    public LettersToPlayAdapter(List<String> contents, View.OnClickListener onClickListener){
         this.contents = contents;
         this.onClickListener = onClickListener;
-        this.inAnimation = inAnimation;
-        this.outAnimation = outAnimation;
     }
 
     @Override
@@ -38,10 +32,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @Override
     public void onBindViewHolder(RecycleViewHolder holder, final int position) {
         holder.tv1.setText(contents.get(position));
-        if(holder.tv1.getText().equals(" ")){
-            holder.tv1.setBackgroundColor(Color.WHITE);
-            holder.viewAnimator.showNext();
-        }
     }
 
     @Override
@@ -57,8 +47,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             tv1 = (TextView) itemView.findViewById(R.id.textView);
             itemView.setOnClickListener(onClickListener);
             viewAnimator = (ViewAnimator) itemView.findViewById(R.id.card);
-            viewAnimator.setInAnimation(AnimationUtils.loadAnimation(itemView.getContext(),inAnimation));
-            viewAnimator.setOutAnimation(AnimationUtils.loadAnimation(itemView.getContext(),outAnimation));
+            viewAnimator.setInAnimation(AnimationUtils.loadAnimation(itemView.getContext(),R.anim.from_middle));
+            viewAnimator.setOutAnimation(AnimationUtils.loadAnimation(itemView.getContext(),R.anim.to_middle));
         }
     }
 }
