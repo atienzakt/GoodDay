@@ -17,24 +17,28 @@ import android.widget.ViewAnimator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 public class BoardFragment extends Fragment implements View.OnClickListener, OnCheckMatchListener {
-    private final String[] lettersToPlay = {"H","A","P","Y","B","I","R","T","D","N","H","A","P","Y","B","I","R","T","D","N"};
-    private final String[] lettersBoard = {"H","A","P","P","Y"," "," "," ",
-            "B","I","R","T","H","D","A","Y",
-            "H","A","N","N","A","H"};
-    private final List<String> lettersToPlayList = new ArrayList<String>(Arrays.asList(lettersToPlay));
-    private final List<String> lettersBoardList = new ArrayList<String>(Arrays.asList(lettersBoard));
+    private final String[] lettersToPlay = {"Good","Day","Friends"};
+    private final List<String> lettersBoardList;
+    private final List<String> lettersToPlayList;
     private RecyclerView lettersInPlay;
     private LettersToPlayAdapter lettersInPlayAdapter;
     private RecyclerView letterBoardInPlay;
-    private LetterBoardAdapter letterBoardInPlayAdapter;
-    private Handler handler = new Handler();
-    private FlipUpdaterThread flipUpdaterThread = new FlipUpdaterThread();
+    private Handler handler;
+    private FlipUpdaterThread flipUpdaterThread;
 
-    public BoardFragment() {}
+    public BoardFragment() {
+        lettersBoardList = fitToGrid(Arrays.asList(lettersToPlay),longestWordLengthInList(lettersToPlay));
+        lettersToPlayList = new ArrayList<>(getUniqueLetterInPairs(lettersBoardList));
+        handler = new Handler();
+        flipUpdaterThread = new FlipUpdaterThread();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,15 +66,14 @@ public class BoardFragment extends Fragment implements View.OnClickListener, OnC
 
     private void setupBoard() {
         letterBoardInPlay = (RecyclerView) getView().findViewById(R.id.letters_board);
-        GridLayoutManager llm = new GridLayoutManager(getActivity(),8,GridLayoutManager.VERTICAL,false);
+        GridLayoutManager llm = new GridLayoutManager(getActivity(),longestWordLengthInList(lettersToPlay),GridLayoutManager.VERTICAL,false);
         letterBoardInPlay.setLayoutManager(llm);
-        letterBoardInPlayAdapter = new LetterBoardAdapter(lettersBoardList);
-        letterBoardInPlay.setAdapter(letterBoardInPlayAdapter);
+        letterBoardInPlay.setAdapter(new LetterBoardAdapter(lettersBoardList));
     }
 
     private void setupTimer(){
         final TextView t = (TextView) getView().findViewById(R.id.timer);
-        GregorianCalendar timerSet = new GregorianCalendar(2016,GregorianCalendar.JULY,20);
+        GregorianCalendar timerSet = new GregorianCalendar(2017,GregorianCalendar.JANUARY,1);
         GregorianCalendar timerNow = new GregorianCalendar();
         new CountDownTimer(timerSet.getTimeInMillis()-timerNow.getTimeInMillis(),1000){
 
@@ -85,11 +88,8 @@ public class BoardFragment extends Fragment implements View.OnClickListener, OnC
                 String display=days+ " | "+hours+" | "+minutes+" | "+seconds;
                 t.setText(display);
             }
-
             @Override
-            public void onFinish() {
-
-            }
+            public void onFinish() {}
         }.start();
     }
 
@@ -130,8 +130,8 @@ public class BoardFragment extends Fragment implements View.OnClickListener, OnC
         if (toCompare.get(0) != toCompare.get(1)){
             String s1 = ((TextView) v1.findViewById(R.id.textView)).getText().toString();
             String s2 = ((TextView) v2.findViewById(R.id.textView)).getText().toString();
-            if (!s1.equals(s2)) {
-                flipUpdaterThread.flip(new ArrayList<View>(toCompare));
+            if (!s1.equalsIgnoreCase(s2)) {
+                flipUpdaterThread.flip(new ArrayList<>(toCompare));
                 handler.postDelayed(flipUpdaterThread,2000);
             } else {
                 findAndFlipMatchesOnBoard(s1);
@@ -146,8 +146,8 @@ public class BoardFragment extends Fragment implements View.OnClickListener, OnC
 
     private void findAndFlipMatchesOnBoard(String s) {
         int index = 0;
-        for(String letters:lettersBoard){
-            if(letters.equals(s)){
+        for(String letters:lettersBoardList){
+            if(letters.equalsIgnoreCase(s)){
                 ((ViewAnimator)letterBoardInPlay.findViewHolderForLayoutPosition(index).itemView.findViewById(R.id.card)).showNext();
             }
             index++;
@@ -155,8 +155,59 @@ public class BoardFragment extends Fragment implements View.OnClickListener, OnC
     }
 
     private void removeInstancesFromList(List<String> list,String toBeRemoved) {
-        List<String> toRemove = new ArrayList<String>();
+        List<String> toRemove = new ArrayList<>();
         toRemove.add(toBeRemoved);
         list.removeAll(toRemove);
+    }
+
+    private List<String> fitToGrid(List<String> toFit, int gridSpan){
+        List<String> toReturn = new ArrayList<>();
+        StringBuilder toAdd = new StringBuilder();
+        for(Iterator<String> i = toFit.iterator();i.hasNext();){
+            String s = i.next();
+            if((toAdd.length()+s.length())>gridSpan){
+                while(toAdd.length()<gridSpan){
+                    toAdd.append(" ");
+                }
+                for(char c:toAdd.toString().toCharArray()){
+                    toReturn.add(c+"");
+                }
+                toAdd.setLength(0);
+            }
+            toAdd.append(s);
+            if(i.hasNext() && (toAdd.length()<gridSpan)){
+                toAdd.append(" ");
+            }
+        }
+        for(char c:toAdd.toString().toCharArray()){
+            toReturn.add(c+"");
+        }
+        return toReturn;
+    }
+
+    private int longestWordLengthInList(String[] list){
+        int longestLength=-1;
+        for(String s:list){
+            if(s.length()>longestLength){
+                longestLength=s.length();
+            }
+        }
+        return longestLength;
+    }
+
+    private List<String> getUniqueLetterInPairs(List<String> list){
+        Set<String> siftSet = new HashSet<>();
+        for(String s:list){
+            for(char c:s.toCharArray())
+            {
+                if(c!=' ') {
+                    siftSet.add((c + "").toUpperCase());
+                }
+            }
+        }
+        List<String> returnList = new ArrayList<>();
+        returnList.addAll(siftSet);
+        returnList.addAll(siftSet);
+        return returnList;
     }
 }
